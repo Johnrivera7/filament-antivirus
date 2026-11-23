@@ -41,9 +41,11 @@ final class ClamAvScanner implements VirusScanner
         }
 
         if ((bool) config('filament-antivirus.clamav.prefer_clamdscan', true)) {
+            // --stream manda el contenido. Pasar el descriptor falla con «Not a regular file»
+            // cuando PHP-FPM y clamd no comparten el mismo /tmp.
             $result = $this->runScanner(
                 (string) config('filament-antivirus.clamav.clamdscan_binary', 'clamdscan'),
-                $absolutePath,
+                ['--stream', $absolutePath],
             );
 
             if ($result !== null) {
